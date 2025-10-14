@@ -12,11 +12,7 @@ namespace TasksApp
         
         static async Task Main()
         {
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddUserSecrets<Program>()
-                .Build();
+            IConfiguration config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
 
             string connectionString = config.GetConnectionString("DefaultConnection");
             IDbConnectionFactory connectionFactory = new SqlDatabaseConnectionFactory(connectionString);
