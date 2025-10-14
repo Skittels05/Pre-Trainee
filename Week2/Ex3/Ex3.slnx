@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Ex3/TasksApp.csproj" />
+  <Project Path="TaksRepository/TasksRepository.csproj" />
+  <Project Path="TasksFactory/TasksFactory.csproj" Id="e1aacddd-2d61-4722-916f-27460e2433b9" />
+</Solution>
