@@ -17,7 +17,7 @@ namespace TasksApp
             string connectionString = config.GetConnectionString("DefaultConnection");
             IDbConnectionFactory connectionFactory = new SqlDatabaseConnectionFactory(connectionString);
             IDbExecutor dbExecutor = new DbExecutorDapper(connectionFactory);
-            var taskRepo = new TaskRepository(dbExecutor);
+            IGenericRepository<TaskItem> taskRepo = new TaskRepository(dbExecutor);
 
             while (true)
             {
@@ -59,7 +59,7 @@ namespace TasksApp
             }
         }
 
-        private static async Task AddTask(TaskRepository repo)
+        private static async Task AddTask(IGenericRepository<TaskItem> repo)
         {
             Console.Clear();
             Console.WriteLine("=== Добавление новой задачи ===");
@@ -82,7 +82,7 @@ namespace TasksApp
             Console.WriteLine($"Задача добавлена с Id = {id}");
         }
 
-        private static async Task ViewTasks(TaskRepository repo)
+        private static async Task ViewTasks(IGenericRepository<TaskItem> repo)
         {
             Console.Clear();
             Console.WriteLine("=== Список всех задач ===\n");
@@ -99,7 +99,7 @@ namespace TasksApp
             }
         }
 
-        private static async Task UpdateTask(TaskRepository repo)
+        private static async Task UpdateTask(IGenericRepository<TaskItem> repo)
         {
             Console.Clear();
             Console.WriteLine("=== Обновление состояния задачи ===");
@@ -134,7 +134,7 @@ namespace TasksApp
             }
         }
 
-        private static async Task DeleteTask(TaskRepository repo)
+        private static async Task DeleteTask(IGenericRepository<TaskItem> repo)
         {
             Console.Clear();
             Console.WriteLine("=== Удаление задачи ===");
