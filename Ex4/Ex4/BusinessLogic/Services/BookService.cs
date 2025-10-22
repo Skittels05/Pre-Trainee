@@ -6,10 +6,12 @@ namespace Ex4.BusinessLogic.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _repo;
+        private readonly IAuthorRepository _authorRepo;
 
-        public BookService(IBookRepository repo)
+        public BookService(IBookRepository repo, IAuthorRepository authorRepo)
         {
             _repo = repo;
+            _authorRepo = authorRepo;
         }
 
         public IEnumerable<Book> GetAll() => _repo.GetAll();
@@ -36,6 +38,9 @@ namespace Ex4.BusinessLogic.Services
 
             if (book.PublishedYear < 0 || book.PublishedYear > DateTime.Now.Year)
                 throw new ArgumentException("Год публикации указан некорректно.");
+            var author = _authorRepo.GetById(book.AuthorId);
+            if (author == null)
+                throw new ArgumentException($"Автор с ID {book.AuthorId} не найден. Укажите существующего автора.");
         }
     }
 }

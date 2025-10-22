@@ -153,11 +153,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Week3\\Ex4\\Ex4\\Ex4.csproj",
+      "projectUniqueName": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Ex4\\Ex4\\Ex4.csproj",
       "projectName": "Ex4",
-      "projectPath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Week3\\Ex4\\Ex4\\Ex4.csproj",
+      "projectPath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Ex4\\Ex4\\Ex4.csproj",
       "packagesPath": "C:\\Users\\skitt\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Week3\\Ex4\\Ex4\\obj\\",
+      "outputPath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Ex4\\Ex4\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0+pOxiZMmDc=",
+  "dgSpecHash": "mvmxYp9k2Zk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Week3\\Ex4\\Ex4\\Ex4.csproj",
+  "projectFilePath": "C:\\Users\\skitt\\Desktop\\Pre-Trainee\\Ex4\\Ex4\\Ex4.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\skitt\\.nuget\\packages\\microsoft.openapi\\1.6.25\\microsoft.openapi.1.6.25.nupkg.sha512",
     "C:\\Users\\skitt\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\9.0.6\\swashbuckle.aspnetcore.swagger.9.0.6.nupkg.sha512",
