@@ -1,4 +1,5 @@
 ﻿using Ex4.BusinessLogic.Models;
+using Ex4.DataAccess.Interfaces;
 using System.Xml.Linq;
 
 namespace Ex4.DataAccess.Repositories

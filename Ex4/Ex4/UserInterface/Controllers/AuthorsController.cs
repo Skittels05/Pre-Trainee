@@ -1,5 +1,5 @@
-﻿using Ex4.BusinessLogic.Models;
-using Ex4.BusinessLogic.Services;
+﻿using Ex4.BusinessLogic.Interfaces;
+using Ex4.BusinessLogic.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ex4.UserInterface.Controllers

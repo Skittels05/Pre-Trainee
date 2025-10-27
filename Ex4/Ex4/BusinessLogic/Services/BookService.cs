@@ -1,5 +1,6 @@
-﻿using Ex4.BusinessLogic.Models;
-using Ex4.DataAccess.Repositories;
+﻿using Ex4.BusinessLogic.Interfaces;
+using Ex4.BusinessLogic.Models;
+using Ex4.DataAccess.Interfaces;
 
 namespace Ex4.BusinessLogic.Services
 {
