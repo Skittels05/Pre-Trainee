@@ -4,10 +4,11 @@ namespace Ex4.BusinessLogic.Interfaces
 {
     public interface IBookService
     {
-        IEnumerable<Book> GetAll();
-        Book? GetById(int id);
-        Book Add(Book book);
-        bool Update(int id, Book book);
-        bool Delete(int id);
+        Task<List<Book>> GetAllBooksAsync();
+        Task<Book?> GetBookByIdAsync(int id);
+        Task AddBookAsync(Book book);
+        Task UpdateBookAsync(Book book);
+        Task DeleteBookAsync(int id);
+        Task<List<Book>> GetBooksPublishedAfterAsync(int year);
     }
 }

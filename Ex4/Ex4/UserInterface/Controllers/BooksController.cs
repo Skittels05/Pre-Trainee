@@ -8,58 +8,60 @@ namespace Ex4.UserInterface.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly IBookService _service;
+        private readonly IBookService _bookService;
 
-        public BooksController(IBookService service)
+        public BooksController(IBookService bookService)
         {
-            _service = service;
+            _bookService = bookService;
         }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_service.GetAll());
+        public async Task<ActionResult<List<Book>>> GetAllBooks()
+        {
+            var books = await _bookService.GetAllBooksAsync();
+            return Ok(books);
+        }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
-            var book = _service.GetById(id);
-            return book == null ? NotFound() : Ok(book);
+            var book = await _bookService.GetBookByIdAsync(id);
+            if (book == null) return NotFound();
+            return Ok(book);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Book book)
+        public async Task<ActionResult> CreateBook([FromBody] Book book)
         {
-            try
-            {
-                var created = _service.Add(book);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _bookService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
 
+
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Book book)
+        public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
         {
-            try
-            {
-                if (_service.Update(id, book))
-                    return NoContent();
-                return NotFound();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var existing = await _bookService.GetBookByIdAsync(id);
+            if (existing == null) return NotFound();
+
+            book.Id = id;
+            await _bookService.UpdateBookAsync(book);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> DeleteBook(int id)
         {
-            if (_service.Delete(id))
-                return NoContent();
-            return NotFound();
+            await _bookService.DeleteBookAsync(id);
+            return NoContent();
         }
+
+        [HttpGet("published-after/{year}")]
+        public async Task<ActionResult<List<Book>>> GetBooksPublishedAfter(int year)
+        {
+            var books = await _bookService.GetBooksPublishedAfterAsync(year);
+            return Ok(books);
+        }
+
     }
 }

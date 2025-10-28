@@ -1,47 +1,52 @@
 ﻿using Ex4.BusinessLogic.Interfaces;
 using Ex4.BusinessLogic.Models;
 using Ex4.DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Ex4.BusinessLogic.Services
 {
     public class BookService : IBookService
     {
-        private readonly IBookRepository _repo;
-        private readonly IAuthorRepository _authorRepo;
+        private readonly IBookRepository _bookRepository;
 
-        public BookService(IBookRepository repo, IAuthorRepository authorRepo)
+        public BookService(IBookRepository bookRepository)
         {
-            _repo = repo;
-            _authorRepo = authorRepo;
+            _bookRepository = bookRepository;
         }
 
-        public IEnumerable<Book> GetAll() => _repo.GetAll();
-
-        public Book? GetById(int id) => _repo.GetById(id);
-
-        public Book Add(Book book)
+        public async Task<List<Book>> GetAllBooksAsync()
         {
-            ValidateBook(book);
-            return _repo.Add(book);
+            return await _bookRepository.FindAll(false).ToListAsync();
         }
 
-        public bool Update(int id, Book book)
+        public async Task<Book?> GetBookByIdAsync(int id)
         {
-            ValidateBook(book);
-            return _repo.Update(id, book);
+            return await _bookRepository.FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
         }
 
-        public bool Delete(int id) => _repo.Delete(id);
-        private void ValidateBook(Book book)
+        public async Task AddBookAsync(Book book)
         {
-            if (string.IsNullOrWhiteSpace(book.Title))
-                throw new ArgumentException("Название книги обязательно для заполнения.");
+            await _bookRepository.CreateAsync(book);
+        }
 
-            if (book.PublishedYear < 0 || book.PublishedYear > DateTime.Now.Year)
-                throw new ArgumentException("Год публикации указан некорректно.");
-            var author = _authorRepo.GetById(book.AuthorId);
-            if (author == null)
-                throw new ArgumentException($"Автор с ID {book.AuthorId} не найден. Укажите существующего автора.");
+        public async Task UpdateBookAsync(Book book)
+        {
+            await _bookRepository.UpdateAsync(book);
+        }
+
+        public async Task DeleteBookAsync(int id)
+        {
+            var book = await _bookRepository.FindByCondition(b => b.Id == id).FirstOrDefaultAsync();
+            if (book != null)
+            {
+                await _bookRepository.DeleteAsync(book);
+            }
+        }
+        public async Task<List<Book>> GetBooksPublishedAfterAsync(int year)
+        {
+            return await _bookRepository.FindByCondition(b => b.PublishedYear > year)
+                                        .ToListAsync();
         }
     }
 }

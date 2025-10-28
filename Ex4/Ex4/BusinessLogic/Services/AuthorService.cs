@@ -1,42 +1,59 @@
 ﻿using Ex4.BusinessLogic.Interfaces;
 using Ex4.BusinessLogic.Models;
 using Ex4.DataAccess.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Ex4.BusinessLogic.Services
 {
-    public class AuthorService:IAuthorService
+    public class AuthorService : IAuthorService
     {
-        private readonly IAuthorRepository _repo;
+        private readonly IAuthorRepository _authorRepository;
 
-        public AuthorService(IAuthorRepository repo)
+        public AuthorService(IAuthorRepository authorRepository)
         {
-            _repo = repo;
+            _authorRepository = authorRepository;
         }
 
-        public IEnumerable<Author> GetAll() => _repo.GetAll();
-
-        public Author? GetById(int id) => _repo.GetById(id);
-
-        public Author Add(Author author)
+        public async Task<List<Author>> GetAllAuthorsAsync()
         {
-            ValidateAuthor(author);
-            return _repo.Add(author);
+            return await _authorRepository.FindAll(false).ToListAsync();
         }
 
-        public bool Update(int id, Author author)
+        public async Task<Author?> GetAuthorByIdAsync(int id)
         {
-            ValidateAuthor(author);
-            return _repo.Update(id, author);
+            return await _authorRepository.FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
         }
 
-        public bool Delete(int id) => _repo.Delete(id);
-        private void ValidateAuthor(Author author)
+        public async Task AddAuthorAsync(Author author)
         {
-            if (string.IsNullOrWhiteSpace(author.Name))
-                throw new ArgumentException("Имя автора обязательно для заполнения.");
+            await _authorRepository.CreateAsync(author);
+        }
 
-            if (author.DateOfBirth > DateTime.Now)
-                throw new ArgumentException("Дата рождения не может быть в будущем.");
+        public async Task UpdateAuthorAsync(Author author)
+        {
+            await _authorRepository.UpdateAsync(author);
+        }
+
+        public async Task DeleteAuthorAsync(int id)
+        {
+            var author = await _authorRepository.FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
+            if (author != null)
+            {
+                await _authorRepository.DeleteAsync(author);
+            }
+        }
+        public async Task<List<Author>> GetAuthorsWithBookCountAsync(int bookCount)
+        {
+            return await _authorRepository.FindAll(false)
+                .Where(a => a.Books.Count == bookCount)
+                .ToListAsync();
+        }
+
+
+        public async Task<List<Author>> FindAuthorsByNameAsync(string namePart)
+        {
+            return await _authorRepository.FindByCondition(a => a.Name.Contains(namePart)).ToListAsync();
         }
     }
 }

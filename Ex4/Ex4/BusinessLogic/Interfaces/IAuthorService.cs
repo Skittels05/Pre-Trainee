@@ -4,10 +4,12 @@ namespace Ex4.BusinessLogic.Interfaces
 {
     public interface IAuthorService
     {
-        IEnumerable<Author> GetAll();
-        Author? GetById(int id);
-        Author Add(Author author);
-        bool Update(int id, Author author);
-        bool Delete(int id);
+        Task<List<Author>> GetAllAuthorsAsync();
+        Task<Author?> GetAuthorByIdAsync(int id);
+        Task AddAuthorAsync(Author author);
+        Task UpdateAuthorAsync(Author author);
+        Task DeleteAuthorAsync(int id);
+        Task<List<Author>> GetAuthorsWithBookCountAsync(int BookCount);
+        Task<List<Author>> FindAuthorsByNameAsync(string namePart);
     }
 }

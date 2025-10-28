@@ -1,13 +1,14 @@
 ﻿using Ex4.BusinessLogic.Models;
+using System.Linq;
 
 namespace Ex4.DataAccess.Interfaces
 {
     public interface IBookRepository
     {
-        IEnumerable<Book> GetAll();
-        Book? GetById(int id);
-        Book Add(Book book);
-        bool Update(int id, Book book);
-        bool Delete(int id);
+        IQueryable<Book> FindAll(bool trackChanges = false);
+        IQueryable<Book> FindByCondition(System.Linq.Expressions.Expression<Func<Book, bool>> expression, bool trackChanges = false);
+        Task CreateAsync(Book book);
+        Task UpdateAsync(Book book);
+        Task DeleteAsync(Book book);
     }
 }

@@ -8,58 +8,63 @@ namespace Ex4.UserInterface.Controllers
     [Route("api/[controller]")]
     public class AuthorsController : ControllerBase
     {
-        private readonly IAuthorService _service;
+        private readonly IAuthorService _authorService;
 
-        public AuthorsController(IAuthorService service)
+        public AuthorsController(IAuthorService authorService)
         {
-            _service = service;
+            _authorService = authorService;
         }
 
         [HttpGet]
-        public IActionResult GetAll() => Ok(_service.GetAll());
+        public async Task<ActionResult<List<Author>>> GetAll()
+        {
+            var authors = await _authorService.GetAllAuthorsAsync();
+            return Ok(authors);
+        }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<ActionResult<Author>> GetById(int id)
         {
-            var author = _service.GetById(id);
-            return author == null ? NotFound() : Ok(author);
+            var author = await _authorService.GetAuthorByIdAsync(id);
+            if (author == null) return NotFound();
+            return Ok(author);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Author author)
+        public async Task<ActionResult> Create([FromBody] Author author)
         {
-            try
-            {
-                var created = _service.Add(author);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _authorService.AddAuthorAsync(author);
+            return CreatedAtAction(nameof(GetById), new { id = author.Id }, author);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Author author)
+        public async Task<ActionResult> Update(int id, [FromBody] Author author)
         {
-            try
-            {
-                if (_service.Update(id, author))
-                    return NoContent();
-                return NotFound();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            if (id != author.Id) return BadRequest();
+            await _authorService.UpdateAuthorAsync(author);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            if (_service.Delete(id))
-                return NoContent();
-            return NotFound();
+            await _authorService.DeleteAuthorAsync(id);
+            return NoContent();
+        }
+
+        
+        [HttpGet("by-book-count/{count}")]
+        public async Task<ActionResult<List<Author>>> GetAuthorsByBookCount(int count)
+        {
+            var authors = await _authorService.GetAuthorsWithBookCountAsync(count);
+            return Ok(authors);
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Author>>> Search([FromQuery] string name)
+        {
+            var authors = await _authorService.FindAuthorsByNameAsync(name);
+            return Ok(authors);
         }
     }
 }
