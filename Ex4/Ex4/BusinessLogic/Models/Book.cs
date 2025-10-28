@@ -1,4 +1,6 @@
-﻿namespace Ex4.BusinessLogic.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Ex4.BusinessLogic.Models
 {
     public class Book
     {
@@ -6,6 +8,7 @@
         public string Title { get; set; }
         public int PublishedYear {  get; set; }
         public int AuthorId {  get; set; }
-        public Author Author { get; set; }
+        [JsonIgnore]
+        public Author? Author { get; set; }
     }
 }

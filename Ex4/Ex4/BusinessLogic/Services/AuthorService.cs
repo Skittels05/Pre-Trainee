@@ -1,4 +1,5 @@
-﻿using Ex4.BusinessLogic.Interfaces;
+﻿using Ex4.BusinessLogic.DTO;
+using Ex4.BusinessLogic.Interfaces;
 using Ex4.BusinessLogic.Models;
 using Ex4.DataAccess.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,16 +16,6 @@ namespace Ex4.BusinessLogic.Services
             _authorRepository = authorRepository;
         }
 
-        public async Task<List<Author>> GetAllAuthorsAsync()
-        {
-            return await _authorRepository.FindAll(false).ToListAsync();
-        }
-
-        public async Task<Author?> GetAuthorByIdAsync(int id)
-        {
-            return await _authorRepository.FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
-        }
-
         public async Task AddAuthorAsync(Author author)
         {
             await _authorRepository.CreateAsync(author);
@@ -37,23 +28,91 @@ namespace Ex4.BusinessLogic.Services
 
         public async Task DeleteAuthorAsync(int id)
         {
-            var author = await _authorRepository.FindByCondition(a => a.Id == id).FirstOrDefaultAsync();
+            var author = await _authorRepository.FindByCondition(a => a.Id == id, true).FirstOrDefaultAsync();
             if (author != null)
-            {
                 await _authorRepository.DeleteAsync(author);
-            }
         }
-        public async Task<List<Author>> GetAuthorsWithBookCountAsync(int bookCount)
+
+        public async Task<List<AuthorDto>> GetAllAuthorsAsync()
         {
             return await _authorRepository.FindAll(false)
-                .Where(a => a.Books.Count == bookCount)
+                .Include(a => a.Books)
+                .Select(a => new AuthorDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    DateOfBirth = a.DateOfBirth,
+                    Books = a.Books.Select(b => new BookDto
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        PublishedYear = b.PublishedYear,
+                        AuthorName = a.Name
+                    }).ToList()
+                })
                 .ToListAsync();
         }
 
-
-        public async Task<List<Author>> FindAuthorsByNameAsync(string namePart)
+        public async Task<AuthorDto?> GetAuthorByIdAsync(int id)
         {
-            return await _authorRepository.FindByCondition(a => a.Name.Contains(namePart)).ToListAsync();
+            return await _authorRepository.FindByCondition(a => a.Id == id, false)
+                .Include(a => a.Books)
+                .Select(a => new AuthorDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    DateOfBirth = a.DateOfBirth,
+                    Books = a.Books.Select(b => new BookDto
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        PublishedYear = b.PublishedYear,
+                        AuthorName = a.Name
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<AuthorDto>> GetAuthorsWithBookCountAsync(int bookCount)
+        {
+            return await _authorRepository.FindAll(false)
+                .Include(a => a.Books)
+                .Where(a => a.Books.Count == bookCount)
+                .Select(a => new AuthorDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    DateOfBirth = a.DateOfBirth,
+                    Books = a.Books.Select(b => new BookDto
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        PublishedYear = b.PublishedYear,
+                        AuthorName = a.Name
+                    }).ToList()
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<AuthorDto>> FindAuthorsByNameAsync(string namePart)
+        {
+            return await _authorRepository.FindByCondition(
+                    a => a.Name.Contains(namePart) || a.Name.StartsWith(namePart), false)
+                .Include(a => a.Books)
+                .Select(a => new AuthorDto
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    DateOfBirth = a.DateOfBirth,
+                    Books = a.Books.Select(b => new BookDto
+                    {
+                        Id = b.Id,
+                        Title = b.Title,
+                        PublishedYear = b.PublishedYear,
+                        AuthorName = a.Name
+                    }).ToList()
+                })
+                .ToListAsync();
         }
     }
 }

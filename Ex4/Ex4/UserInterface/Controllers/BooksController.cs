@@ -1,4 +1,5 @@
-﻿using Ex4.BusinessLogic.Interfaces;
+﻿using Ex4.BusinessLogic.DTO;
+using Ex4.BusinessLogic.Interfaces;
 using Ex4.BusinessLogic.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,35 +17,41 @@ namespace Ex4.UserInterface.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Book>>> GetAllBooks()
+        public async Task<ActionResult<List<BookDto>>> GetAllBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBookById(int id)
+        public async Task<ActionResult<BookDto>> GetBookById(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
-            if (book == null) return NotFound();
+            if (book == null)
+                return NotFound();
+
             return Ok(book);
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateBook([FromBody] Book book)
+        public async Task<ActionResult> AddBook([FromBody] Book book)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
 
-
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(int id, [FromBody] Book book)
         {
-            var existing = await _bookService.GetBookByIdAsync(id);
-            if (existing == null) return NotFound();
+            if (id != book.Id)
+                return BadRequest("ID в пути и теле не совпадают.");
 
-            book.Id = id;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             await _bookService.UpdateBookAsync(book);
             return NoContent();
         }
@@ -56,12 +63,11 @@ namespace Ex4.UserInterface.Controllers
             return NoContent();
         }
 
-        [HttpGet("published-after/{year}")]
-        public async Task<ActionResult<List<Book>>> GetBooksPublishedAfter(int year)
+        [HttpGet("published-after")]
+        public async Task<ActionResult<List<BookDto>>> GetBooksPublishedAfter([FromQuery] int year)
         {
             var books = await _bookService.GetBooksPublishedAfterAsync(year);
             return Ok(books);
         }
-
     }
 }
