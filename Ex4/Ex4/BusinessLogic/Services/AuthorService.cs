@@ -1,7 +1,9 @@
 ﻿using Ex4.BusinessLogic.DTO;
 using Ex4.BusinessLogic.Interfaces;
 using Ex4.BusinessLogic.Models;
+using Ex4.BusinessLogic.Validators;
 using Ex4.DataAccess.Interfaces;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -10,19 +12,27 @@ namespace Ex4.BusinessLogic.Services
     public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository _authorRepository;
+        private readonly IValidator<Author> _authorValidator;
 
-        public AuthorService(IAuthorRepository authorRepository)
+        public AuthorService(IAuthorRepository authorRepository, IValidator<Author> authorValidator)
         {
             _authorRepository = authorRepository;
+            _authorValidator = authorValidator;
         }
 
         public async Task AddAuthorAsync(Author author)
         {
+            var result = await _authorValidator.ValidateAsync(author);
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
             await _authorRepository.CreateAsync(author);
         }
 
         public async Task UpdateAuthorAsync(Author author)
         {
+            var result = await _authorValidator.ValidateAsync(author);
+            if (!result.IsValid)
+                throw new ValidationException(result.Errors);
             await _authorRepository.UpdateAsync(author);
         }
 

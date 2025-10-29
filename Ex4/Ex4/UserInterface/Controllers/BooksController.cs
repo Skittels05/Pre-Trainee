@@ -36,9 +36,6 @@ namespace Ex4.UserInterface.Controllers
         [HttpPost]
         public async Task<ActionResult> AddBook([FromBody] Book book)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
         }
@@ -48,9 +45,6 @@ namespace Ex4.UserInterface.Controllers
         {
             if (id != book.Id)
                 return BadRequest("ID в пути и теле не совпадают.");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             await _bookService.UpdateBookAsync(book);
             return NoContent();

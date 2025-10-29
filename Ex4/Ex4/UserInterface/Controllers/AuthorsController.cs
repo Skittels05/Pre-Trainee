@@ -16,7 +16,7 @@ namespace Ex4.UserInterface.Controllers
             _authorService = authorService;
         }
 
-        // GET: api/authors
+        
         [HttpGet]
         public async Task<ActionResult<List<AuthorDto>>> GetAllAuthors()
         {
@@ -24,7 +24,6 @@ namespace Ex4.UserInterface.Controllers
             return Ok(authors);
         }
 
-        // GET: api/authors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
         {
@@ -35,32 +34,23 @@ namespace Ex4.UserInterface.Controllers
             return Ok(author);
         }
 
-        // POST: api/authors
         [HttpPost]
         public async Task<ActionResult> AddAuthor([FromBody] Author author)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             await _authorService.AddAuthorAsync(author);
             return CreatedAtAction(nameof(GetAuthorById), new { id = author.Id }, author);
         }
 
-        // PUT: api/authors/5
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateAuthor(int id, [FromBody] Author author)
         {
             if (id != author.Id)
                 return BadRequest("ID в пути и теле не совпадают.");
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             await _authorService.UpdateAuthorAsync(author);
             return NoContent();
         }
 
-        // DELETE: api/authors/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAuthor(int id)
         {
@@ -68,7 +58,6 @@ namespace Ex4.UserInterface.Controllers
             return NoContent();
         }
 
-        // GET: api/authors/with-books/3
         [HttpGet("with-books/{bookCount}")]
         public async Task<ActionResult<List<AuthorDto>>> GetAuthorsWithBookCount(int bookCount)
         {
@@ -76,7 +65,6 @@ namespace Ex4.UserInterface.Controllers
             return Ok(authors);
         }
 
-        // GET: api/authors/search?namePart=Тол
         [HttpGet("search")]
         public async Task<ActionResult<List<AuthorDto>>> FindAuthorsByName([FromQuery] string namePart)
         {
